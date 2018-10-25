@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -36,6 +37,7 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
 	private String videoUrl;
 	private ProgressDialog mProgressDialog;
 	private final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE =100;
+	private String TAG = EditActivity.class.getName();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -177,13 +179,14 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
 				epVideo.rotation(Integer.parseInt(et_rotation.getText().toString().trim()),cb_mirror.isChecked());
 			if(cb_text.isChecked())
 				epVideo.addText(Integer.parseInt(et_text_x.getText().toString().trim()),Integer.parseInt(et_text_y.getText().toString().trim()),30,"red",MyApplication.getSavePath() + "msyh.ttf",et_text.getText().toString().trim());
-			mProgressDialog.setProgress(0);
-			mProgressDialog.show();
+//			mProgressDialog.setProgress(0);
+//			mProgressDialog.show();
 			final String outPath = MyApplication.getSavePath() + "out.mp4";
 			EpEditor.exec(epVideo, new EpEditor.OutputOption(outPath), new OnEditorListener() {
 				@Override
 				public void onSuccess() {
-					Toast.makeText(EditActivity.this, "编辑完成:"+outPath, Toast.LENGTH_SHORT).show();
+					Log.i(TAG,"编辑完成:"+outPath);
+//					Toast.makeText(EditActivity.this, "编辑完成:"+outPath, Toast.LENGTH_SHORT).show();
 					mProgressDialog.dismiss();
 
 					Intent v = new Intent(Intent.ACTION_VIEW);
@@ -193,7 +196,8 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
 
 				@Override
 				public void onFailure() {
-					Toast.makeText(EditActivity.this, "编辑失败", Toast.LENGTH_SHORT).show();
+					Log.i(TAG,"编辑失败:"+outPath);
+//					Toast.makeText(EditActivity.this, "编辑失败", Toast.LENGTH_SHORT).show();
 					mProgressDialog.dismiss();
 				}
 
