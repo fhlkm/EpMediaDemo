@@ -1,8 +1,12 @@
 package com.joe.epmediademo.Activity;
 
+import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -31,6 +35,7 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
 	private Button bt_file, bt_exec;
 	private String videoUrl;
 	private ProgressDialog mProgressDialog;
+	private final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE =100;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -105,7 +110,45 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
 		intent.setType("video/*");
 		intent.setAction(Intent.ACTION_GET_CONTENT);
 		intent.addCategory(Intent.CATEGORY_OPENABLE);
-		startActivityForResult(intent, CHOOSE_FILE);
+		if (Build.VERSION.SDK_INT <=23){
+			startActivityForResult(intent, CHOOSE_FILE);
+		}else{
+			askPermission(intent);
+		}
+	}
+	@TargetApi(23)
+	private void askPermission(Intent mIntent){
+		if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+				!= PackageManager.PERMISSION_GRANTED) {
+
+			// Should we show an explanation?
+			if (shouldShowRequestPermissionRationale(
+					Manifest.permission.READ_EXTERNAL_STORAGE)) {
+				// Explain to the user why we need to read the contacts
+			}
+
+			requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+					MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+
+			// MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE is an
+			// app-defined int constant that should be quite unique
+
+			return;
+		}else{
+			startActivityForResult(mIntent, CHOOSE_FILE);
+		}
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+		if(requestCode == MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE &&grantResults.length > 0 ){
+			Intent intent = new Intent();
+			intent.setType("video/*");
+			intent.setAction(Intent.ACTION_GET_CONTENT);
+			intent.addCategory(Intent.CATEGORY_OPENABLE);
+			startActivityForResult(intent, CHOOSE_FILE);
+		}
+
 	}
 
 	@Override
